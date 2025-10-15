@@ -1,0 +1,31 @@
+server:
+  port: 8081
+
+logging:
+  level:
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.oauth2.client: TRACE
+    org.springframework.web.client.RestTemplate: DEBUG
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          my-auth-server:
+            client-id: "localhostclient"
+            client-secret: "localhostsecret"
+            scope: read:secret,openid
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://127.0.0.1:8081/login/oauth2/code/my-auth-server"
+        provider:
+          my-auth-server:
+            issuer-uri: "http://auth-server:8086"
+            authorization-uri: "http://auth-server:8086/oauth2/authorize"
+            token-uri: "http://auth-server:8086/oauth2/token"
+            user-info-uri: "http://auth-server:8086/userinfo"
+            jwk-set-uri: "http://auth-server:8086/oauth2/jwks"
+
+oauth2-config:
+  init-auth-path: "oauth2/authorization/my-auth-server"
+  resource-url: "http://localhost:8085/secret"

@@ -1,0 +1,12 @@
+servlet:
+  session:
+    cookie:
+      name: AUTHSERVERSESSIONID
+
+server:
+  port: 8086
+
+logging:
+  level:
+    org.springframework.security.oauth2.server: DEBUG
+    org.springframework.security: DEBUG
