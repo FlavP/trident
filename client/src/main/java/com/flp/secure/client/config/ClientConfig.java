@@ -11,21 +11,19 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpRequestInterceptor;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
 @EnableMethodSecurity
 @Configuration
 public class ClientConfig {
 
     @Bean
-    WebClient webClient(OAuth2AuthorizedClientManager authorizedClientManager) {
-        ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 = new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
-        oauth2.setDefaultOAuth2AuthorizedClient(true);
-        return WebClient.builder()
-                .apply(oauth2.oauth2Configuration())
-                .build();
+    public RestClient restClient(OAuth2AuthorizedClientManager authorizedClientManager)
+    {
+        OAuth2ClientHttpRequestInterceptor interceptor = new OAuth2ClientHttpRequestInterceptor(authorizedClientManager);
+        return RestClient.builder().requestInterceptor(interceptor).build();
     }
 
     @Bean
