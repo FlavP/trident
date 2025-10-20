@@ -6,9 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
-import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
+import static org.springframework.security.oauth2.client.web.client.RequestAttributeClientRegistrationIdResolver.clientRegistrationId;
 
 @Controller
 public class ClientController {
@@ -17,10 +17,10 @@ public class ClientController {
     @Value("${oauth2-config.resource-url}")
     private String resourceUrl;
 
-    private final WebClient webClient;
+    private final RestClient restClient;
 
-    public ClientController(WebClient w) {
-        this.webClient = w;
+    public ClientController(RestClient r) {
+        this.restClient = r;
     }
 
     @GetMapping("/welcome")
@@ -33,13 +33,12 @@ public class ClientController {
     public String postWelcome(Model model, OAuth2AuthenticationToken token) {
         model.addAttribute("userName", token.getPrincipal().getName());
 
-        String secret = this.webClient
+        String secret = this.restClient
                 .get()
                 .uri(resourceUrl)
                 .attributes(clientRegistrationId("my-auth-server"))
                 .retrieve()
-                .bodyToMono(String.class)
-                .block();
+                .body(String.class);
 
         model.addAttribute("secretInfo", secret);
 
